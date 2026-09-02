@@ -1,0 +1,123 @@
+# ============================================================================
+# IntelliRoute — root .gitignore
+#
+# Architecture: monorepo with two working languages (Python + Node) and
+# two real source trees (backend/, frontend/). One consolidated ignore
+# file at the root keeps it simple — both tools (git itself, IDEs,
+# uploaders) read it.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Secrets / local config
+# ----------------------------------------------------------------------------
+
+# Anyone can copy the example template — nobody should commit a real key.
+.env
+.env.*
+!.env.example
+
+# Local overrides and history — never reviewable, always noise.
+*.local
+
+
+# ----------------------------------------------------------------------------
+# Python — backend/
+# ----------------------------------------------------------------------------
+
+# Bytecode: regenerated on every Python run, never commit.
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtualenvs — created by `python -m venv`, install path varies per dev.
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# Test / lint caches — regenerated on every run.
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Distribution / build — never committed.
+*.egg-info/
+*.egg
+build/
+dist/
+pip-wheel-metadata/
+
+# Jupyter — only relevant if someone runs notebooks in this repo.
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+
+# ----------------------------------------------------------------------------
+# Node — frontend/
+# ----------------------------------------------------------------------------
+
+# Dependencies: 200-500 MB of regenerated-from-lock-file tree.
+node_modules/
+
+# Build output: vite writes here, you write somewhere else.
+dist/
+dist-ssr/
+.vite/
+
+# Coverage / tooling caches.
+.nyc_output/
+coverage/
+
+
+# ----------------------------------------------------------------------------
+# OS / editor
+# ----------------------------------------------------------------------------
+
+# macOS: Spotlight metadata, Finder junk.
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows: Thumbs.db, hidden attribs, OneDrive sync lock files.
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux: vim/nano swap files, systemd junk.
+*~
+.nano-history
+.fuse_hidden*
+
+# JetBrains / VS Code / Cursor — pick one of these conventions. The defaults
+# below cover what these editors silently create.
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.cursor/
+
+# Generic uploaders (Heroku, Render, etc.) — keep their config but not state.
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*s
+yarn-error.log*
+pnpm-debug.log*
+
+
+# ----------------------------------------------------------------------------
+# Project-specific
+# ----------------------------------------------------------------------------
+
+# Playwright / browser QA artifacts if added later.
+test-results/
+playwright-report/
+playwright/.cache/
