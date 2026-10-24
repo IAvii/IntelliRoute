@@ -46,6 +46,11 @@ def _startup():
     run_bootstrap(state)
 
 
+@app.get("/health")
+def health_endpoint():
+    return {"status": "ok", "bootstrapped": state.bootstrapped}
+
+
 @app.post("/api/bootstrap")
 def bootstrap_endpoint():
     run_bootstrap(state)
