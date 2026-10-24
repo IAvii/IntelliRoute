@@ -1,7 +1,6 @@
 """
 Graph mutation (port of notebook Cell 9) + serialization to plain
-JSON the frontend can lay out and render (port of the layout math
-inside plot_network_graph, in JS on the client side).
+JSON the frontend can lay out and render on the client side.
 """
 import numpy as np
 
@@ -33,9 +32,8 @@ def graph_add_review(s: State, dept: str, sub_cat: str, review_text: str):
 
 def graph_to_json(s: State) -> dict:
     """
-    Plain node/edge list. Layout (pentagon depts, fanned subs, clustered
-    reviews) is computed client-side in KnowledgeGraph.jsx, mirroring the
-    matplotlib layout math from plot_network_graph().
+    Plain node/edge list. Layout (department branches and review placement)
+    is computed client-side.
     """
     nodes = []
     for n, data in s.review_graph.nodes(data=True):
