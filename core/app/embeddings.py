@@ -76,6 +76,8 @@ def call_llm(prompt: str) -> str:
         model=config.LLM_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
-        reasoning_effort="none"
+        # groq==0.11.0 predates the typed `reasoning_effort` arg, so pass it
+        # through extra_body (the API itself supports it on qwen3.x).
+        extra_body={"reasoning_effort": "none"},
     )
     return resp.choices[0].message.content.strip()
