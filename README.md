@@ -60,13 +60,12 @@ flowchart TD
 ```
 
 Each stage records its scores into a `trace["stages"]` list that the
-React `<InferenceTrace />` component renders as a live waterfall.
+React `<TracePanel />` component renders as a live waterfall.
 
 ## Project layout
 
 ```
-classifier/
-├── backend/                          FastAPI — the classification pipeline
+core/                               FastAPI — the classification pipeline
 │   └── app/
 │       ├── main.py                   API endpoints
 │       ├── config.py                 thresholds, departments, model names
@@ -77,31 +76,33 @@ classifier/
 │       ├── pipeline.py               extract_issues, classify_issue_traced
 │       ├── bootstrap.py              builds initial KB from 10 seed reviews
 │       └── __init__.py
-├── frontend/                         React (Vite) — console UI
+├── web/                              React (Vite) — console UI
 │   └── src/
 │       ├── main.jsx
 │       ├── App.jsx
 │       ├── api.js                    fetch wrapper around /api/*
 │       ├── index.css
 │       └── components/
-│           ├── InferenceTrace.jsx    live BM25 → FAISS → Rerank → LLM trace
-│           ├── KnowledgeGraph.jsx    SVG graph (pentagon + fan per dept)
-│           ├── CategoryPanel.jsx
-│           ├── NodeDetailDrawer.jsx
-│           ├── ResultsSummary.jsx
-│           └── StatsStrip.jsx
+│           ├── graph-flow.tsx        live BM25 → FAISS → Rerank → LLM trace
+│           ├── graph-kpi.tsx         metric cards and distribution charts
+│           └── intelliroute/
+│               ├── TracePanel.jsx    stage-by-stage inference trace
+│               ├── KnowledgePanel.jsx knowledge-map treemap and review table
+│               ├── CategoryIndex.jsx searchable taxonomy
+│               └── NodeDrawer.jsx    department / category detail drawer
 ├── venv/                             Python virtualenv (created in install)
 └── README.md
 ```
 
 ## Install
 
-Requires Python 3.10+ and Node 18+.
+Requires Python 3.11–3.12 (the pinned `numpy==1.26.4` / `faiss-cpu==1.8.0`
+have no Python 3.13 wheels) and Node 18+.
 
 ### 1. Backend
 
 ```bash
-cd backend
+cd core
 python -m venv ../venv                  # creates venv at project root
 # Windows:
 ..\venv\Scripts\activate
@@ -112,6 +113,9 @@ pip install -r requirements.txt
 cp .env.example .env                    # paste your GROQ_API_KEY
 uvicorn app.main:app --reload --port 8000
 ```
+
+If you use `uv`, `uv venv --python 3.11 ../venv` creates the 3.11 venv
+without needing a system Python 3.11 install.
 
 The first request triggers a one-time `bootstrap()` that builds the
 initial knowledge base from 10 seed reviews via a single Groq call. Both
@@ -124,7 +128,7 @@ You'll need a Groq API key for the LLM stages
 ### 2. Frontend
 
 ```bash
-cd frontend
+cd web
 npm install
 npm run dev
 ```
@@ -135,7 +139,7 @@ on port 8000 (see `vite.config.js`); no CORS configuration needed.
 For a production build:
 
 ```bash
-npm run build                           # outputs to frontend/dist/
+npm run build                           # outputs to web/dist/
 ```
 
 ## API
@@ -183,7 +187,7 @@ Response shape:
 
 ## Configuration
 
-Everything you might want to tune lives in `backend/app/config.py`.
+Everything you might want to tune lives in `core/app/config.py`.
 
 | Constant                  | Default                              | Effect                                                          |
 |---------------------------|--------------------------------------|-----------------------------------------------------------------|
@@ -197,7 +201,7 @@ Everything you might want to tune lives in `backend/app/config.py`.
 | `OUTLIER_THRESHOLD`       | `0.65`                               | Reviews below this similarity to prototype skip prototype update|
 | `EMBEDDING_MODEL`         | `BAAI/bge-small-en-v1.5`             | Bi-encoder (384-dim, ~120MB)                                    |
 | `CROSS_ENCODER_MODEL`     | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Cross-encoder reranker (~70MB, lazy-loaded)                 |
-| `LLM_MODEL`               | `qwen/qwen3.6-27b` (Groq)            | Used for issue splitting + LLM fallback                         |
+| `LLM_MODEL`               | `qwen/qwen3.8-27b` (Groq)            | Used for issue splitting + LLM fallback                         |
 
 The seed corpus in `INITIAL_REVIEWS` is what the bootstrap LLM call
 classified into the initial sub-categories. To bootstrap from your own
