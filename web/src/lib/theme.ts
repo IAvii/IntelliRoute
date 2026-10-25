@@ -95,3 +95,17 @@ export function summarizeStages(traces?: Trace[] | null) {
   }
   return used;
 }
+
+export type StatusTone = "danger" | "warning" | "success";
+
+export function statusTone(offline: boolean, connecting: boolean): StatusTone {
+  if (offline) return "danger";
+  if (connecting) return "warning";
+  return "success";
+}
+
+export function statusLabel(offline: boolean, connecting: boolean): string {
+  if (offline) return "Engine offline";
+  if (connecting) return "Connecting";
+  return "Engine live";
+}

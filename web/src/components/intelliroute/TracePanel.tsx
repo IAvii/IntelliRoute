@@ -10,9 +10,10 @@ import Badge from "@/components/arc/badge/badge";
 import Button from "@/components/arc/button/button";
 import EmptyState from "@/components/arc/empty-state/empty-state";
 import SmoothHeight from "@/components/ui/smooth-height";
+import StatusBadge from "@/components/ui/status-badge";
 import { SoundingRail } from "@/components/ui/timeline-reasoning-rail";
 import { buildTraceSteps } from "@/lib/trace";
-import { DECISION_BADGES, deptColor, formatDuration } from "@/lib/theme";
+import { DECISION_BADGES, deptColor } from "@/lib/theme";
 import type { DecisionBadge } from "@/lib/theme";
 import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
 import type { Trace, TraceStage } from "@/lib/types";
@@ -159,52 +160,12 @@ export default function TracePanel({
             Trace log
           </h2>
         </div>
-        <div className="flex items-center gap-2">
-          {loading ? (
-            <Badge
-              key="loading"
-              tone="info"
-              size="sm"
-              animateWidth={false}
-              className="min-w-[78px] shrink-0 justify-center"
-              icon={<LoaderCircle className="size-3 animate-spin" />}
-            >
-              <span className="inline-block w-11 text-center tabular-nums">
-                {elapsed > 0 ? formatDuration(elapsed) : ""}
-              </span>
-            </Badge>
-          ) : hasTraces ? (
-            <Badge
-              key="issues"
-              tone="neutral"
-              size="sm"
-              animateWidth={false}
-              className="min-w-[78px] shrink-0 justify-center"
-            >
-              {traces.length} {traces.length === 1 ? "issue" : "issues"}
-            </Badge>
-          ) : noComplaint ? (
-            <Badge
-              key="positive"
-              tone="success"
-              size="sm"
-              animateWidth={false}
-              className="min-w-[78px] shrink-0 justify-center"
-            >
-              positive
-            </Badge>
-          ) : (
-            <Badge
-              key="idle"
-              tone="neutral"
-              size="sm"
-              animateWidth={false}
-              className="min-w-[78px] shrink-0 justify-center"
-            >
-              idle
-            </Badge>
-          )}
-        </div>
+        <StatusBadge
+          loading={loading}
+          noComplaint={noComplaint}
+          resultLabel={hasTraces ? `${traces.length} ${traces.length === 1 ? "issue" : "issues"}` : undefined}
+          elapsed={elapsed}
+        />
       </header>
 
       <SmoothHeight
