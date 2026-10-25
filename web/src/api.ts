@@ -1,6 +1,6 @@
 const BASE = "/api";
 
-async function handle(res) {
+async function handle(res: Response) {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.detail || `Request failed (${res.status})`);
@@ -8,7 +8,7 @@ async function handle(res) {
   return res.json();
 }
 
-export async function classify(review, skipSplit = false) {
+export async function classify(review: string, skipSplit = false) {
   const res = await fetch(`${BASE}/classify`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -29,5 +29,10 @@ export async function getStats() {
 
 export async function resetState() {
   const res = await fetch(`${BASE}/reset`, { method: "POST" });
+  return handle(res);
+}
+
+export async function bootstrap() {
+  const res = await fetch(`${BASE}/bootstrap`, { method: "POST" });
   return handle(res);
 }
