@@ -13,15 +13,33 @@ import SmoothHeight from "@/components/ui/smooth-height";
 import { SoundingRail } from "@/components/ui/timeline-reasoning-rail";
 import { buildTraceSteps } from "@/lib/trace";
 import { DECISION_BADGES, deptColor, formatDuration } from "@/lib/theme";
+import type { DecisionBadge } from "@/lib/theme";
 import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import type { Trace, TraceStage } from "@/lib/types";
 
-function confidence(stages) {
-  const sub = (stages || []).find((stage) => stage.stage === "Sub FAISS");
-  if (!sub) return { label: "LLM fallback", tone: "warning" };
-  return DECISION_BADGES[sub.decision] || { label: "Assigned", tone: "neutral" };
+interface TracePanelProps {
+  traces?: Trace[];
+  loading?: boolean;
+  error?: string | null;
+  elapsed?: number;
+  noComplaint?: boolean;
+  onExample?: () => void;
+  onOpenNode?: (id: string) => void;
 }
 
-function TraceCard({ trace, index, onOpenNode }) {
+interface TraceCardProps {
+  trace: Trace;
+  index: number;
+  onOpenNode?: (id: string) => void;
+}
+
+function confidence(stages?: TraceStage[]): DecisionBadge {
+  const sub = (stages || []).find((stage) => stage.stage === "Sub FAISS");
+  if (!sub) return { label: "LLM fallback", tone: "warning" };
+  return DECISION_BADGES[sub.decision as string] || { label: "Assigned", tone: "neutral" };
+}
+
+function TraceCard({ trace, index, onOpenNode }: TraceCardProps) {
   const steps = buildTraceSteps(trace);
   const decision = confidence(trace.stages);
   const color = deptColor(trace.result.department);
@@ -110,13 +128,13 @@ function RoutingSkeleton() {
 
 export default function TracePanel({
   traces = [],
-  loading,
+  loading = false,
   error,
-  elapsed,
+  elapsed = 0,
   noComplaint = false,
   onExample,
   onOpenNode,
-}) {
+}: TracePanelProps) {
   const hasTraces = traces.length > 0;
   const bodyKey = error
     ? `error:${error}`

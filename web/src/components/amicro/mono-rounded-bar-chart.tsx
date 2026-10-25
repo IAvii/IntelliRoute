@@ -17,7 +17,40 @@ import {
 
 const number = new Intl.NumberFormat("en-US");
 
-function MonoBarTooltip({ active, payload, label, primaryLabel, secondaryLabel }) {
+export interface MonoBarDatum {
+  /** Full name shown as the tooltip title; falls back to `label`. */
+  name?: string;
+  label: string;
+  primary: number;
+  secondary?: number;
+  /** Draws this bar in the accent ink, such as the selected issue's department. */
+  accent?: boolean;
+}
+
+export interface MonoRoundedBarChartProps {
+  data?: MonoBarDatum[];
+  height?: number | string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  className?: string;
+}
+
+interface MonoBarTooltipDatum {
+  dataKey?: string | number;
+  value?: number;
+  fill?: string;
+  payload?: MonoBarDatum;
+}
+
+interface MonoBarTooltipProps {
+  active?: boolean;
+  payload?: MonoBarTooltipDatum[];
+  label?: string | number;
+  primaryLabel: string;
+  secondaryLabel: string;
+}
+
+function MonoBarTooltip({ active, payload, label, primaryLabel, secondaryLabel }: MonoBarTooltipProps) {
   if (!active || !payload?.length) return null;
   const title = payload[0]?.payload?.name || label;
 
@@ -57,7 +90,7 @@ export function MonoRoundedBarChart({
   primaryLabel = "Reviews",
   secondaryLabel = "Categories",
   className = "",
-}) {
+}: MonoRoundedBarChartProps) {
   const reduce = useReducedMotion();
   const hasSecondary = data.some((item) => Number(item.secondary) > 0);
   const maxValue = data.reduce(

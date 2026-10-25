@@ -76,20 +76,20 @@ core/                               FastAPI — the classification pipeline
 │       ├── pipeline.py               extract_issues, classify_issue_traced
 │       ├── bootstrap.py              builds initial KB from 10 seed reviews
 │       └── __init__.py
-├── web/                              React (Vite) — console UI
+├── web/                              React + TypeScript (Vite) — console UI
 │   └── src/
-│       ├── main.jsx
-│       ├── App.jsx
-│       ├── api.js                    fetch wrapper around /api/*
+│       ├── main.tsx
+│       ├── App.tsx
+│       ├── api.ts                    fetch wrapper around /api/*
 │       ├── index.css
 │       └── components/
 │           ├── graph-flow.tsx        live BM25 → FAISS → Rerank → LLM trace
 │           ├── graph-kpi.tsx         metric cards and distribution charts
 │           └── intelliroute/
-│               ├── TracePanel.jsx    stage-by-stage inference trace
-│               ├── KnowledgePanel.jsx knowledge-map treemap and review table
-│               ├── CategoryIndex.jsx searchable taxonomy
-│               └── NodeDrawer.jsx    department / category detail drawer
+│               ├── TracePanel.tsx    stage-by-stage inference trace
+│               ├── KnowledgePanel.tsx knowledge-map treemap and review table
+│               ├── CategoryIndex.tsx searchable taxonomy
+│               └── NodeDrawer.tsx    department / category detail drawer
 ├── venv/                             Python virtualenv (created in install)
 └── README.md
 ```

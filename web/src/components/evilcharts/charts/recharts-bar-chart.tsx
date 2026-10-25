@@ -36,9 +36,9 @@ import {
   type TooltipVariant,
 } from "@/components/evilcharts/ui/recharts-tooltip";
 import { ChartLegend, ChartLegendContent, type ChartLegendVariant } from "@/components/evilcharts/ui/recharts-legend";
-import { Brush, EvilBrush, useEvilBrush, type BrushProps, type EvilBrushRange } from "@/components/evilcharts/ui/recharts-brush";
+import { Brush, EvilBrush, useEvilBrush, type BrushProps } from "@/components/evilcharts/ui/recharts-brush";
 import { ChartBackground, type BackgroundVariant } from "@/components/evilcharts/ui/recharts-background";
-import { RectRadius } from "recharts/types/shape/Rectangle";
+import type { RectRadius } from "recharts/types/shape/Rectangle";
 import { motion, useReducedMotion } from "motion/react";
 
 // Constants
@@ -124,7 +124,7 @@ type EvilBarChartBaseProps<
   barRadius?: number; // default corner radius for every <Bar />
   animationType?: BarAnimationType; // default grow-in order for every <Bar />
   barGap?: number; // gap between bars within the same category
-  barCategoryGap?: number; // gap between categories of bars
+  barCategoryGap?: number | string; // gap between categories of bars, as px or a percentage
   backgroundVariant?: BackgroundVariant; // background pattern drawn behind the chart
   defaultSelectedDataKey?: string | null; // series selected on first render
   onSelectionChange?: (selectedDataKey: string | null) => void; // fires when the selected series changes

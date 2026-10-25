@@ -32,7 +32,7 @@ import KnowledgePanel from "@/components/intelliroute/KnowledgePanel";
 import NodeDrawer from "@/components/intelliroute/NodeDrawer";
 import TracePanel from "@/components/intelliroute/TracePanel";
 import SmoothHeight from "@/components/ui/smooth-height";
-import { bootstrap, classify, getGraph, resetState } from "./api.js";
+import { bootstrap, classify, getGraph, resetState } from "./api";
 import {
   DECISION_BADGES,
   DEPARTMENTS,
@@ -50,6 +50,7 @@ import {
   panelTitle,
 } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import type { ClassifyResult, GraphData, Trace } from "@/lib/types";
 
 const EXAMPLES = [
   { label: "Spicy + taste", text: "food was too spicy and not taste good" },
@@ -76,7 +77,7 @@ const PIPELINE = [
   { id: "LLM", label: "LLM" },
 ];
 
-const DEPT_SHORT = {
+const DEPT_SHORT: Record<string, string> = {
   Food: "Food",
   Delivery: "Deliv",
   Payment: "Pay",
@@ -96,19 +97,19 @@ const REPO_URL = "https://github.com/IAvii/IntelliRoute";
 const PROFILE_URL = "https://github.com/IAvii";
 const MIN_LOADING_MS = 700;
 
-function statusTone(offline, connecting) {
+function statusTone(offline: boolean, connecting: boolean) {
   if (offline) return "danger";
   if (connecting) return "warning";
   return "success";
 }
 
-function statusLabel(offline, connecting) {
+function statusLabel(offline: boolean, connecting: boolean) {
   if (offline) return "Engine offline";
   if (connecting) return "Connecting";
   return "Engine live";
 }
 
-function GitHubIcon({ className }) {
+function GitHubIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -121,7 +122,15 @@ function GitHubIcon({ className }) {
   );
 }
 
-function BootScreen({ offline, connecting, onRetry }) {
+function BootScreen({
+  offline,
+  connecting,
+  onRetry,
+}: {
+  offline: boolean;
+  connecting: boolean;
+  onRetry?: () => void;
+}) {
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden px-6 py-8">
       <a
@@ -225,6 +234,13 @@ function ConfidenceCard({
   onActiveChange,
   loading,
   noComplaint = false,
+}: {
+  trace?: Trace | null;
+  traces?: Trace[];
+  activeIndex?: number;
+  onActiveChange?: (index: number) => void;
+  loading?: boolean;
+  noComplaint?: boolean;
 }) {
   const { source, rows } = useMemo(() => candidateScores(trace), [trace]);
   const chartData = useMemo(
@@ -356,10 +372,18 @@ function ConfidenceCard({
   );
 }
 
-function DecisionCard({ trace, noComplaint = false, loading = false }) {
+function DecisionCard({
+  trace,
+  noComplaint = false,
+  loading = false,
+}: {
+  trace?: Trace | null;
+  noComplaint?: boolean;
+  loading?: boolean;
+}) {
   const sub = trace?.stages?.find((stage) => stage.stage === "Sub FAISS");
   const rerank = trace?.stages?.find((stage) => stage.stage === "Rerank");
-  const decision = DECISION_BADGES[sub?.decision];
+  const decision = DECISION_BADGES[sub?.decision as string];
   const margin = Math.max(0, Math.min(1, Number(sub?.margin) || 0));
   const bodyKey = loading
     ? "loading"
@@ -497,18 +521,21 @@ function Console() {
   const [skipSplit, setSkipSplit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<ClassifyResult | null>(null);
   const [activeTraceIndex, setActiveTraceIndex] = useState(0);
-  const [graph, setGraph] = useState(null);
+  const [graph, setGraph] = useState<GraphData | null>(null);
   const [connecting, setConnecting] = useState(true);
   const [offline, setOffline] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [lastRun, setLastRun] = useState({ duration: null, skipSplit: false });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [lastRun, setLastRun] = useState<{
+    duration: number | null;
+    skipSplit: boolean;
+  }>({ duration: null, skipSplit: false });
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetting, setResetting] = useState(false);
 
-  const resetTimer = useRef(null);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isMac = /Mac|iPhone|iPad/.test(
     typeof navigator === "undefined" ? "" : navigator.platform,
   );
@@ -611,11 +638,11 @@ function Console() {
 
       void loadGraph();
     } catch (err) {
-      setError(err.message || "Classification failed");
+      setError((err as Error).message || "Classification failed");
       toast({
         type: "error",
         title: "Routing failed",
-        description: err.message || "The request could not be completed.",
+        description: (err as Error).message || "The request could not be completed.",
       });
       if (err instanceof TypeError) setOffline(true);
     } finally {
@@ -656,7 +683,7 @@ function Console() {
       toast({
         type: "error",
         title: "Reset failed",
-        description: err.message || "The engine did not respond.",
+        description: (err as Error).message || "The engine did not respond.",
       });
     } finally {
       setResetting(false);
@@ -664,7 +691,7 @@ function Console() {
   }, [confirmReset, resetting, toast]);
 
   useEffect(() => {
-    function onKeyDown(event) {
+    function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
         event.preventDefault();
         handleClassify();
@@ -688,7 +715,10 @@ function Console() {
   }, [graph, selectedId]);
 
   const deptAgg = useMemo(() => {
-    const map = new Map(
+    const map = new Map<
+      string,
+      { dept: string; color: string; subs: number; reviews: number }
+    >(
       DEPARTMENTS.map((dept) => [
         dept,
         { dept, color: deptColor(dept), subs: 0, reviews: 0 },
@@ -696,17 +726,18 @@ function Console() {
     );
     for (const node of graph?.nodes || []) {
       if (node.type !== "sub_category") continue;
+      const dept = node.dept as string;
       const entry =
-        map.get(node.dept) ||
+        map.get(dept) ||
         {
-          dept: node.dept,
-          color: deptColor(node.dept, node.color),
+          dept,
+          color: deptColor(dept, node.color),
           subs: 0,
           reviews: 0,
         };
       entry.subs += 1;
       entry.reviews += Number(node.count) || 0;
-      map.set(node.dept, entry);
+      map.set(dept, entry);
     }
     return [...map.values()];
   }, [graph]);
@@ -740,7 +771,7 @@ function Console() {
     [deptAgg, activeTrace],
   );
 
-  function applyExample(text) {
+  function applyExample(text: string) {
     setReview(text);
     setError(null);
   }

@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import {
   animate,
   motion,
   useMotionValue,
   useReducedMotion,
 } from "motion/react";
+import type { AnimationPlaybackControls } from "motion/react";
 import { motionTokens } from "@/components/arc/lib/motion-tokens";
+
+interface SmoothHeightProps {
+  children?: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  /** Changes when the content changes size, such as the query or result key. */
+  morphKey?: string;
+}
 
 /**
  * Follows its content height. When `morphKey` changes, the height springs
@@ -17,14 +27,14 @@ export default function SmoothHeight({
   className,
   contentClassName,
   morphKey = "",
-}) {
+}: SmoothHeightProps) {
   const reduce = useReducedMotion();
-  const frame = useRef(null);
-  const content = useRef(null);
-  const last = useRef();
-  const controls = useRef();
+  const frame = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const last = useRef<number | undefined>(undefined);
+  const controls = useRef<AnimationPlaybackControls | undefined>(undefined);
   const moving = useRef(false);
-  const height = useMotionValue("auto");
+  const height = useMotionValue<number | "auto">("auto");
 
   const settle = useCallback(() => {
     const playback = controls.current;
@@ -62,7 +72,7 @@ export default function SmoothHeight({
       });
     }
     moving.current = true;
-    let playback;
+    let playback: AnimationPlaybackControls;
     playback = animate(height, [from, next], {
       ...motionTokens.spring.smooth,
       onComplete: () => {

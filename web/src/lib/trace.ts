@@ -1,13 +1,25 @@
-import { DECISION_BADGES, STAGE_META, score } from "./theme.js";
+import { DECISION_BADGES, STAGE_META, score } from "./theme";
+import type { SoundingRailStep } from "@/components/ui/timeline-reasoning-rail";
+import type { Trace, TraceScores, TraceStage } from "./types";
 
-function entries(scores) {
+interface Evidence {
+  label: string;
+  value: string;
+}
+
+export interface CandidateScores {
+  source: string | null;
+  rows: Array<{ label: string; score: number }>;
+}
+
+function entries(scores?: TraceScores): Evidence[] {
   return Object.entries(scores || {}).map(([label, value]) => ({
     label,
     value: score(value),
   }));
 }
 
-function stageNumber(index) {
+function stageNumber(index: number) {
   return String(index + 1).padStart(2, "0");
 }
 
@@ -16,10 +28,10 @@ function stageNumber(index) {
  * kept, including the optional rerank and the LLM fallback. Text here is
  * explanatory: the scores live in the evidence chips.
  */
-export function buildTraceSteps(trace) {
+export function buildTraceSteps(trace?: Trace | null): SoundingRailStep[] {
   if (!trace) return [];
 
-  return (trace.stages || []).map((stage, index) => {
+  return (trace.stages || []).map((stage: TraceStage, index: number) => {
     const meta = STAGE_META[stage.stage] || {
       label: stage.stage,
       kicker: "Stage",
@@ -27,7 +39,7 @@ export function buildTraceSteps(trace) {
     const base = {
       id: `${trace.query}-${index}-${stage.stage}`,
       label: meta.label,
-      status: "done",
+      status: "done" as const,
       time: `S${stageNumber(index)}`,
     };
 
@@ -48,7 +60,8 @@ export function buildTraceSteps(trace) {
     }
 
     if (stage.stage === "Sub FAISS") {
-      const decision = DECISION_BADGES[stage.decision]?.label || stage.decision;
+      const decision =
+        DECISION_BADGES[stage.decision as string]?.label || stage.decision;
       return {
         ...base,
         detail: `${stage.winner} leads the shortlist with a ${score(stage.margin)} margin. The bi-encoder decision was ${decision}; the cross-encoder only fires when that confidence is thin.`,
@@ -68,7 +81,9 @@ export function buildTraceSteps(trace) {
         evidence: [
           { label: "bi-encoder", value: stage.bi_encoder_winner || "—" },
           { label: "rerank", value: stage.winner || "—" },
-          ...(stage.scores || []).map(([label, value]) => ({
+          ...(
+            (stage.scores as Array<[string, number]> | undefined) || []
+          ).map(([label, value]) => ({
             label,
             value: score(value),
           })),
@@ -90,14 +105,14 @@ export function buildTraceSteps(trace) {
  * Candidate confidence for the chart: rerank probabilities when the safety
  * net fired, otherwise the bi-encoder similarities.
  */
-export function candidateScores(trace) {
+export function candidateScores(trace?: Trace | null): CandidateScores {
   if (!trace) return { source: null, rows: [] };
 
   const rerank = (trace.stages || []).find((s) => s.stage === "Rerank");
   if (rerank?.scores?.length) {
     return {
       source: "Cross-encoder probabilities",
-      rows: rerank.scores
+      rows: (rerank.scores as Array<[string, number]>)
         .map(([label, value]) => ({ label, score: Number(value) }))
         .sort((a, b) => b.score - a.score),
     };

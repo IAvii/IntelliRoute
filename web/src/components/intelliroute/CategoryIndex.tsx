@@ -9,22 +9,37 @@ import SmoothHeight from "@/components/ui/smooth-height";
 import { deptColor } from "@/lib/theme";
 import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import type { GraphData, GraphNode } from "@/lib/types";
 
-function buildGroups(graph) {
+interface CategoryGroup {
+  dept: string;
+  color: string;
+  reviews: number;
+  subs: GraphNode[];
+}
+
+interface CategoryIndexProps {
+  graph?: GraphData | null;
+  selectedId?: string | null;
+  onSelectNode?: (id: string) => void;
+}
+
+function buildGroups(graph?: GraphData | null): CategoryGroup[] {
   if (!graph?.nodes) return [];
-  const map = new Map();
+  const map = new Map<string, CategoryGroup>();
 
   for (const node of graph.nodes) {
     if (node.type !== "sub_category") continue;
-    if (!map.has(node.dept)) {
-      map.set(node.dept, {
-        dept: node.dept,
-        color: deptColor(node.dept),
+    const dept = node.dept as string;
+    if (!map.has(dept)) {
+      map.set(dept, {
+        dept,
+        color: deptColor(dept),
         reviews: 0,
         subs: [],
       });
     }
-    const group = map.get(node.dept);
+    const group = map.get(dept)!;
     group.subs.push(node);
     group.reviews += Number(node.count) || 0;
   }
@@ -37,7 +52,7 @@ function buildGroups(graph) {
     .sort((a, b) => a.dept.localeCompare(b.dept));
 }
 
-export default function CategoryIndex({ graph, selectedId, onSelectNode }) {
+export default function CategoryIndex({ graph, selectedId, onSelectNode }: CategoryIndexProps) {
   const [query, setQuery] = useState("");
   const [dept, setDept] = useState("all");
 

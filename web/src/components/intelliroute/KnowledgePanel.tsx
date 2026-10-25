@@ -4,18 +4,46 @@ import Badge from "@/components/arc/badge/badge";
 import Treemap from "@/components/arc/treemap/treemap";
 import { DEPARTMENTS, deptColor } from "@/lib/theme";
 import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import type { GraphData } from "@/lib/types";
 
-function buildTree(graph) {
+interface KnowledgeLeaf {
+  id: string;
+  label: string;
+  value: number;
+  color: number;
+}
+
+interface KnowledgeBranch {
+  id: string;
+  label: string;
+  children: KnowledgeLeaf[];
+}
+
+interface KnowledgeTree {
+  id: string;
+  label: string;
+  children: KnowledgeBranch[];
+}
+
+interface KnowledgePanelProps {
+  graph?: GraphData | null;
+  selectedId?: string | null;
+}
+
+function buildTree(graph?: GraphData | null): KnowledgeTree {
   const order = [...DEPARTMENTS];
-  const byDept = new Map(order.map((dept) => [dept, []]));
+  const byDept = new Map<string, KnowledgeLeaf[]>(
+    order.map((dept) => [dept, []]),
+  );
 
   for (const node of graph?.nodes || []) {
     if (node.type !== "sub_category") continue;
-    if (!byDept.has(node.dept)) {
-      byDept.set(node.dept, []);
-      order.push(node.dept);
+    const dept = node.dept as string;
+    if (!byDept.has(dept)) {
+      byDept.set(dept, []);
+      order.push(dept);
     }
-    byDept.get(node.dept).push({
+    byDept.get(dept)!.push({
       id: node.id,
       label: node.label,
       value: Math.max(1, Number(node.count) || 0),
@@ -36,7 +64,7 @@ function buildTree(graph) {
   };
 }
 
-export default function KnowledgePanel({ graph, selectedId }) {
+export default function KnowledgePanel({ graph, selectedId }: KnowledgePanelProps) {
   const [focus, setFocus] = useState("kb");
   const tree = useMemo(() => buildTree(graph), [graph]);
 
@@ -83,10 +111,10 @@ export default function KnowledgePanel({ graph, selectedId }) {
           onFocusChange={setFocus}
           height={318}
           colorLabel="Reviews"
-          formatValue={(value) =>
+          formatValue={(value: number) =>
             `${value} ${value === 1 ? "review" : "reviews"}`
           }
-          formatColor={(value) => {
+          formatColor={(value: number) => {
             const count = Math.round(value);
             return `${count} ${count === 1 ? "review" : "reviews"}`;
           }}
