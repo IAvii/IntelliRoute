@@ -1,9 +1,10 @@
-﻿import { ArrowRight, Heart } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 import Badge from "@/components/arc/badge/badge";
 import Progress from "@/components/arc/progress/progress";
+import PanelHeader from "@/components/ui/panel-header";
 import SmoothHeight from "@/components/ui/smooth-height";
 import { DECISION_BADGES, deptColor, score } from "@/lib/theme";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import { panel, panelBody } from "@/lib/ui";
 import type { Trace } from "@/lib/types";
 
 interface DecisionCardProps {
@@ -31,34 +32,35 @@ export default function DecisionCard({
 
   return (
     <section className={panel} aria-labelledby="decision-heading" aria-busy={loading}>
-      <header className={panelHeader}>
-        <div>
-          <p className={kicker}>03b · Decision</p>
-          <h2 id="decision-heading" className={panelTitle}>Call sheet</h2>
-        </div>
-        {loading ? (
-          <Badge tone="neutral" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
-            waiting
-          </Badge>
-        ) : noComplaint ? (
-          <Badge tone="success" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
-            positive
-          </Badge>
-        ) : trace ? (
-          <Badge
-            tone={decision?.tone || "neutral"}
-            size="sm"
-            animateWidth={false}
-            className="min-w-[102px] shrink-0 justify-center"
-          >
-            {decision?.label || "LLM route"}
-          </Badge>
-        ) : (
-          <Badge tone="neutral" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
-            idle
-          </Badge>
-        )}
-      </header>
+      <PanelHeader
+        kicker="03b · Decision"
+        title="Call sheet"
+        headingId="decision-heading"
+        badge={
+          loading ? (
+            <Badge tone="neutral" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
+              waiting
+            </Badge>
+          ) : noComplaint ? (
+            <Badge tone="success" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
+              positive
+            </Badge>
+          ) : trace ? (
+            <Badge
+              tone={decision?.tone || "neutral"}
+              size="sm"
+              animateWidth={false}
+              className="min-w-[102px] shrink-0 justify-center"
+            >
+              {decision?.label || "LLM route"}
+            </Badge>
+          ) : (
+            <Badge tone="neutral" size="sm" animateWidth={false} className="min-w-[102px] shrink-0 justify-center">
+              idle
+            </Badge>
+          )
+        }
+      />
 
       <SmoothHeight contentClassName={panelBody} morphKey={bodyKey}>
         {trace ? (

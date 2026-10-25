@@ -7,7 +7,8 @@ import { Input } from "@/components/arc/input/input";
 import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import SmoothHeight from "@/components/ui/smooth-height";
 import { deptColor } from "@/lib/theme";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import PanelHeader from "@/components/ui/panel-header";
+import { panel, panelBody } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 import type { GraphData, GraphNode } from "@/lib/types";
 
@@ -98,22 +99,17 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
 
   return (
     <section className={panel} aria-labelledby="categories-heading">
-      <header className={panelHeader}>
-        <div>
-          <p className={kicker}>04 · Taxonomy</p>
-          <h2 id="categories-heading" className={panelTitle}>
-            Category index
-          </h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge tone="neutral" size="sm">
-            {groups.length} departments
-          </Badge>
-          <Badge tone="neutral" size="sm">
-            {totalReviews} reviews
-          </Badge>
-        </div>
-      </header>
+      <PanelHeader
+        kicker="04 · Taxonomy"
+        title="Category index"
+        headingId="categories-heading"
+        badge={
+          <div className="flex items-center gap-2">
+            <Badge tone="neutral" size="sm">{groups.length} departments</Badge>
+            <Badge tone="neutral" size="sm">{totalReviews} reviews</Badge>
+          </div>
+        }
+      />
 
       <div className={panelBody}>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">

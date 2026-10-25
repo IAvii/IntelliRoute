@@ -9,13 +9,14 @@ import Alert from "@/components/arc/alert/alert";
 import Badge from "@/components/arc/badge/badge";
 import Button from "@/components/arc/button/button";
 import EmptyState from "@/components/arc/empty-state/empty-state";
+import PanelHeader from "@/components/ui/panel-header";
 import SmoothHeight from "@/components/ui/smooth-height";
 import StatusBadge from "@/components/ui/status-badge";
 import { SoundingRail } from "@/components/ui/timeline-reasoning-rail";
 import { buildTraceSteps } from "@/lib/trace";
 import { DECISION_BADGES, deptColor } from "@/lib/theme";
 import type { DecisionBadge } from "@/lib/theme";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import { kicker, panel, panelBody } from "@/lib/ui";
 import type { Trace, TraceStage } from "@/lib/types";
 
 interface TracePanelProps {
@@ -153,20 +154,19 @@ export default function TracePanel({
       aria-labelledby="trace-heading"
       aria-busy={loading}
     >
-      <header className={panelHeader}>
-        <div>
-          <p className={kicker}>02 · Inference</p>
-          <h2 id="trace-heading" className={panelTitle}>
-            Trace log
-          </h2>
-        </div>
-        <StatusBadge
-          loading={loading}
-          noComplaint={noComplaint}
-          resultLabel={hasTraces ? `${traces.length} ${traces.length === 1 ? "issue" : "issues"}` : undefined}
-          elapsed={elapsed}
-        />
-      </header>
+      <PanelHeader
+        kicker="02 · Inference"
+        title="Trace log"
+        headingId="trace-heading"
+        badge={
+          <StatusBadge
+            loading={loading}
+            noComplaint={noComplaint}
+            resultLabel={hasTraces ? `${traces.length} ${traces.length === 1 ? "issue" : "issues"}` : undefined}
+            elapsed={elapsed}
+          />
+        }
+      />
 
       <SmoothHeight
         contentClassName={`${panelBody} space-y-4 ${

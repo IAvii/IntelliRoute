@@ -3,7 +3,8 @@ import { Network, MousePointerClick } from "lucide-react";
 import Badge from "@/components/arc/badge/badge";
 import Treemap from "@/components/arc/treemap/treemap";
 import { DEPARTMENTS, deptColor } from "@/lib/theme";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import PanelHeader from "@/components/ui/panel-header";
+import { panel, panelBody } from "@/lib/ui";
 import type { GraphData } from "@/lib/types";
 
 interface KnowledgeLeaf {
@@ -86,22 +87,19 @@ export default function KnowledgePanel({ graph, selectedId }: KnowledgePanelProp
 
   return (
     <section className={panel} aria-labelledby="knowledge-heading">
-      <header className={panelHeader}>
-        <div>
-          <p className={kicker}>05 · Knowledge</p>
-          <h2 id="knowledge-heading" className={panelTitle}>
-            Knowledge map
-          </h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge tone="neutral" size="sm" icon={<Network className="size-3" />}>
-            {groups.length} branches
-          </Badge>
-          <Badge tone="neutral" size="sm">
-            {total} reviews
-          </Badge>
-        </div>
-      </header>
+      <PanelHeader
+        kicker="05 · Knowledge"
+        title="Knowledge map"
+        headingId="knowledge-heading"
+        badge={
+          <div className="flex items-center gap-2">
+            <Badge tone="neutral" size="sm" icon={<Network className="size-3" />}>
+              {groups.length} branches
+            </Badge>
+            <Badge tone="neutral" size="sm">{total} reviews</Badge>
+          </div>
+        }
+      />
 
       <div className={panelBody}>
         <Treemap

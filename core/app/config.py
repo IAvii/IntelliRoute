@@ -53,13 +53,6 @@ DEPARTMENTS = [
     "Restaurant Experience",
 ]
 
-DEPT_COLORS = {
-    "Food": "#FF6B6B",
-    "Delivery": "#4ECDC4",
-    "Payment": "#45B7D1",
-    "App & Tech": "#96CEB4",
-    "Restaurant Experience": "#FFEAA7",
-}
 
 INITIAL_REVIEWS = [
     "The biryani was completely stale and had a horrible smell.",

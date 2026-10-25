@@ -1,11 +1,12 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { ChartNoAxesColumnIncreasing, Heart } from "lucide-react";
 import Badge from "@/components/arc/badge/badge";
 import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import { EvilBarChart } from "@/components/evilcharts/charts/recharts-bar-chart";
+import PanelHeader from "@/components/ui/panel-header";
 import SmoothHeight from "@/components/ui/smooth-height";
 import { candidateScores } from "@/lib/trace";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import { panel, panelBody } from "@/lib/ui";
 import type { Trace } from "@/lib/types";
 
 interface ConfidenceCardProps {
@@ -45,39 +46,38 @@ export default function ConfidenceCard({
 
   return (
     <section className={panel} aria-labelledby="confidence-heading">
-      <header className={panelHeader}>
-        <div>
-          <p className={kicker}>03 · Confidence</p>
-          <h2 id="confidence-heading" className={panelTitle}>
-            Candidate confidence
-          </h2>
-        </div>
-        {traces.length > 1 ? (
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-faint-ink">
-              issue
-            </span>
-            <SegmentedControl
-              options={traces.map((_, i) => ({
-                value: String(i),
-                label: String(i + 1).padStart(2, "0"),
-              }))}
-              value={String(activeIndex)}
-              onValueChange={(v) => onActiveChange?.(Number(v))}
-              label="Issue confidence"
-            />
-          </div>
-        ) : (
-          <Badge
-            tone={source ? "info" : noComplaint ? "success" : "neutral"}
-            size="sm"
-            animateWidth={false}
-            className="min-w-[56px] shrink-0 justify-center"
-          >
-            {source ? "scored" : noComplaint ? "positive" : "waiting"}
-          </Badge>
-        )}
-      </header>
+      <PanelHeader
+        kicker="03 · Confidence"
+        title="Candidate confidence"
+        headingId="confidence-heading"
+        badge={
+          traces.length > 1 ? (
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-faint-ink">
+                issue
+              </span>
+              <SegmentedControl
+                options={traces.map((_, i) => ({
+                  value: String(i),
+                  label: String(i + 1).padStart(2, "00"),
+                }))}
+                value={String(activeIndex)}
+                onValueChange={(v) => onActiveChange?.(Number(v))}
+                label="Issue confidence"
+              />
+            </div>
+          ) : (
+            <Badge
+              tone={source ? "info" : noComplaint ? "success" : "neutral"}
+              size="sm"
+              animateWidth={false}
+              className="min-w-[56px] shrink-0 justify-center"
+            >
+              {source ? "scored" : noComplaint ? "positive" : "waiting"}
+            </Badge>
+          )
+        }
+      />
 
       <SmoothHeight contentClassName={panelBody} morphKey={bodyKey}>
         {chartData.length > 0 ? (

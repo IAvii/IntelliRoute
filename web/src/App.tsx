@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   Command,
@@ -37,7 +37,8 @@ import {
   statusTone,
   summarizeStages,
 } from "@/lib/theme";
-import { kicker, panel, panelBody, panelHeader, panelTitle } from "@/lib/ui";
+import PanelHeader from "@/components/ui/panel-header";
+import { panel, panelBody } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -400,17 +401,12 @@ function Console() {
             className={cn(panel, "scroll-mt-24")}
             aria-labelledby="composer-heading"
           >
-            <header className={panelHeader}>
-              <div>
-                <p className={kicker}>01 · Console</p>
-                <h2 id="composer-heading" className={panelTitle}>
-                  Route a review
-                </h2>
-              </div>
-              <Badge tone="neutral" size="sm">
-                {review.length} chars
-              </Badge>
-            </header>
+            <PanelHeader
+              kicker="01 · Console"
+              title="Route a review"
+              headingId="composer-heading"
+              badge={<Badge tone="neutral" size="sm">{review.length} chars</Badge>}
+            />
 
             <div className={panelBody}>
               <Textarea
@@ -491,23 +487,20 @@ function Console() {
             className={cn(panel, "flex flex-col")}
             aria-labelledby="pipeline-heading"
           >
-            <header className={panelHeader}>
-              <div>
-                <p className={kicker}>01b · Flow</p>
-                <h2 id="pipeline-heading" className={panelTitle}>
-                  Pipeline
-                </h2>
-              </div>
-              <StatusBadge
-                loading={engine.loading}
-                noComplaint={noComplaint}
-                resultLabel={
-                  usedStages.size ? `${usedStages.size}/5 fired` : undefined
-                }
-                loadingLabel="running"
-                minWidth="min-w-[64px]"
-              />
-            </header>
+            <PanelHeader
+              kicker="01b · Flow"
+              title="Pipeline"
+              headingId="pipeline-heading"
+              badge={
+                <StatusBadge
+                  loading={engine.loading}
+                  noComplaint={noComplaint}
+                  resultLabel={usedStages.size ? `${usedStages.size}/5 fired` : undefined}
+                  loadingLabel="running"
+                  minWidth="min-w-[64px]"
+                />
+              }
+            />
 
             <div className="flex flex-1 flex-col p-5">
               <GraphFlow
@@ -614,17 +607,12 @@ function Console() {
             className={cn(panel, "flex flex-col")}
             aria-labelledby="distribution-heading"
           >
-            <header className={panelHeader}>
-              <div>
-                <p className={kicker}>06 · Distribution</p>
-                <h2 id="distribution-heading" className={panelTitle}>
-                  Department mix
-                </h2>
-              </div>
-              <Badge tone="neutral" size="sm">
-                {stats.sub_categories} categories
-              </Badge>
-            </header>
+            <PanelHeader
+              kicker="06 · Distribution"
+              title="Department mix"
+              headingId="distribution-heading"
+              badge={<Badge tone="neutral" size="sm">{stats.sub_categories} categories</Badge>}
+            />
 
             <div className={cn(panelBody, "flex flex-1 flex-col")}>
               <div className="flex items-end justify-between gap-3">
