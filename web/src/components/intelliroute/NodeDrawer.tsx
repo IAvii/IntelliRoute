@@ -1,7 +1,9 @@
+import { useState } from "react";
 import type { CSSProperties } from "react";
 import { ArrowRight, Layers, MessageSquareText } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import Badge from "@/components/arc/badge/badge";
+import Button from "@/components/arc/button/button";
 import { CopyButton } from "@/components/arc/copy-button/copy-button";
 import {
   Drawer,
@@ -12,6 +14,10 @@ import { motionTokens } from "@/components/arc/lib/motion-tokens";
 import { CarbonLift } from "@/components/ui/copy-button-travel";
 import { deptColor } from "@/lib/theme";
 import type { GraphData, GraphEdge, GraphNode } from "@/lib/types";
+import { formatCount, plural } from "@/lib/utils";
+
+/** A category can hold thousands of reviews; the drawer previews the first page. */
+const REVIEW_PREVIEW = 50;
 
 interface NodeDrawerProps {
   open?: boolean;
@@ -59,10 +65,10 @@ function DepartmentBody({ node, graph, onSelectNode }: NodeBodyProps) {
           Department
         </Badge>
         <Badge tone="neutral" size="sm">
-          {subs.length} categories
+          {plural(subs.length, "category", "categories")}
         </Badge>
         <Badge tone="neutral" size="sm">
-          {reviews} reviews
+          {plural(reviews, "review")}
         </Badge>
       </div>
 
@@ -93,7 +99,7 @@ function DepartmentBody({ node, graph, onSelectNode }: NodeBodyProps) {
               {sub.label}
             </span>
             <span className="font-mono text-[10px] tabular-nums text-faint-ink">
-              {sub.count}
+              {formatCount(Number(sub.count) || 0)}
             </span>
             <ArrowRight className="size-3.5 text-faint-ink" />
           </button>
@@ -106,6 +112,8 @@ function DepartmentBody({ node, graph, onSelectNode }: NodeBodyProps) {
 function CategoryBody({ node, graph, onSelectNode }: NodeBodyProps) {
   const reviews = subReviews(node, graph);
   const color = deptColor(node.dept);
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? reviews : reviews.slice(0, REVIEW_PREVIEW);
 
   return (
     <div className="space-y-5" style={{ "--dept": color } as CSSProperties}>
@@ -114,7 +122,7 @@ function CategoryBody({ node, graph, onSelectNode }: NodeBodyProps) {
           {node.dept}
         </Badge>
         <Badge tone="neutral" size="sm">
-          {reviews.length} reviews
+          {plural(reviews.length, "review")}
         </Badge>
       </div>
 
@@ -134,7 +142,7 @@ function CategoryBody({ node, graph, onSelectNode }: NodeBodyProps) {
           </p>
         ) : (
           <ul className="mt-2 space-y-2">
-            {reviews.map((text, index) => (
+            {visible.map((text, index) => (
               <li
                 key={`${index}-${text.slice(0, 12)}`}
                 className="group rounded-xl border border-line/80 bg-paper/45 p-3"
@@ -158,6 +166,16 @@ function CategoryBody({ node, graph, onSelectNode }: NodeBodyProps) {
             ))}
           </ul>
         )}
+        {reviews.length > visible.length ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-3"
+            onClick={() => setShowAll(true)}
+          >
+            Show all {plural(reviews.length, "review")}
+          </Button>
+        ) : null}
       </div>
 
       <button

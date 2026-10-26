@@ -6,6 +6,7 @@ import { DEPARTMENTS, deptColor } from "@/lib/theme";
 import PanelHeader from "@/components/ui/panel-header";
 import { panel, panelBody } from "@/lib/ui";
 import type { GraphData } from "@/lib/types";
+import { formatCount, plural } from "@/lib/utils";
 
 interface KnowledgeLeaf {
   id: string;
@@ -94,9 +95,9 @@ export default function KnowledgePanel({ graph, selectedId }: KnowledgePanelProp
         badge={
           <div className="flex items-center gap-2">
             <Badge tone="neutral" size="sm" icon={<Network className="size-3" />}>
-              {groups.length} branches
+              {plural(groups.length, "branch", "branches")}
             </Badge>
-            <Badge tone="neutral" size="sm">{total} reviews</Badge>
+            <Badge tone="neutral" size="sm">{plural(total, "review")}</Badge>
           </div>
         }
       />
@@ -109,13 +110,8 @@ export default function KnowledgePanel({ graph, selectedId }: KnowledgePanelProp
           onFocusChange={setFocus}
           height={318}
           colorLabel="Reviews"
-          formatValue={(value: number) =>
-            `${value} ${value === 1 ? "review" : "reviews"}`
-          }
-          formatColor={(value: number) => {
-            const count = Math.round(value);
-            return `${count} ${count === 1 ? "review" : "reviews"}`;
-          }}
+          formatValue={(value: number) => plural(value, "review")}
+          formatColor={(value: number) => plural(Math.round(value), "review")}
           emptyLabel="No routes learned yet"
         />
 
@@ -133,11 +129,14 @@ export default function KnowledgePanel({ graph, selectedId }: KnowledgePanelProp
                   className="size-2 rounded-full"
                   style={{ background: deptColor(group.id) }}
                 />
-                <span className="min-w-0 truncate text-[11px] text-ink-soft">
+                <span
+                  className="min-w-0 line-clamp-2 text-[11px] text-ink-soft"
+                  title={group.label}
+                >
                   {group.label}
                 </span>
-                <span className="ml-auto font-mono text-[10px] tabular-nums text-faint-ink">
-                  {count}
+                <span className="ml-auto shrink-0 font-mono text-[10px] tabular-nums text-faint-ink">
+                  {formatCount(count)}
                 </span>
               </button>
             );

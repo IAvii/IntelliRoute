@@ -9,7 +9,7 @@ import SmoothHeight from "@/components/ui/smooth-height";
 import { deptColor } from "@/lib/theme";
 import PanelHeader from "@/components/ui/panel-header";
 import { panel, panelBody } from "@/lib/ui";
-import { cn } from "@/lib/utils";
+import { cn, formatCount, plural } from "@/lib/utils";
 import type { GraphData, GraphNode } from "@/lib/types";
 
 interface CategoryGroup {
@@ -105,8 +105,8 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
         headingId="categories-heading"
         badge={
           <div className="flex items-center gap-2">
-            <Badge tone="neutral" size="sm">{groups.length} departments</Badge>
-            <Badge tone="neutral" size="sm">{totalReviews} reviews</Badge>
+            <Badge tone="neutral" size="sm">{plural(groups.length, "department")}</Badge>
+            <Badge tone="neutral" size="sm">{plural(totalReviews, "review")}</Badge>
           </div>
         }
       />
@@ -146,7 +146,15 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
         </div>
 
         <SmoothHeight className="mt-5" morphKey={contentKey}>
-          {filtered.length === 0 ? (
+          {groups.length === 0 ? (
+            <div>
+              <EmptyState
+                icon={<FolderSearch className="size-5" />}
+                title="No categories yet"
+                description="Route a review to learn the first category, or reset the knowledge base to rebuild from the seed reviews."
+              />
+            </div>
+          ) : filtered.length === 0 ? (
             <div>
               <EmptyState
                 icon={<FolderSearch className="size-5" />}
@@ -167,7 +175,7 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
               />
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {filtered.map((group) => {
                 const share = totalReviews
                   ? Math.round((group.reviews / totalReviews) * 100)
@@ -187,13 +195,16 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
                         className="size-2 rounded-full"
                         style={{ background: group.color }}
                       />
-                      <span className="text-[13px] font-medium text-ink">
+                      <span
+                        className="min-w-0 truncate text-[13px] font-medium text-ink"
+                        title={group.dept}
+                      >
                         {group.dept}
                       </span>
-                      <span className="ml-auto font-mono text-[10px] tabular-nums text-muted-ink">
-                        {group.reviews} / {share}%
+                      <span className="ml-auto shrink-0 font-mono text-[10px] tabular-nums text-muted-ink">
+                        {formatCount(group.reviews)} / {share}%
                       </span>
-                      <ArrowUpRight className="size-3.5 text-faint-ink" />
+                      <ArrowUpRight className="size-3.5 shrink-0 text-faint-ink" />
                     </button>
 
                     <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-line/70">
@@ -228,11 +239,14 @@ export default function CategoryIndex({ graph, selectedId, onSelectNode }: Categ
                                 active ? "text-accent" : "text-faint-ink",
                               )}
                             />
-                            <span className="min-w-0 truncate text-[12.5px]">
+                            <span
+                              className="min-w-0 truncate text-[12.5px]"
+                              title={sub.label}
+                            >
                               {sub.label}
                             </span>
-                            <span className="ml-auto font-mono text-[10px] tabular-nums text-faint-ink group-hover:text-muted-ink">
-                              {sub.count}
+                            <span className="ml-auto shrink-0 font-mono text-[10px] tabular-nums text-faint-ink group-hover:text-muted-ink">
+                              {formatCount(Number(sub.count) || 0)}
                             </span>
                           </button>
                         );
