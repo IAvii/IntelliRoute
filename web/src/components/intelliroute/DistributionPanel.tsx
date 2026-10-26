@@ -8,7 +8,7 @@ import MonoRoundedBarChart, {
 } from "@/components/amicro/mono-rounded-bar-chart";
 import PanelHeader from "@/components/ui/panel-header";
 import type { Stats } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, plural } from "@/lib/utils";
 import { panel, panelBody } from "@/lib/ui";
 
 interface DistributionPanelProps {
@@ -29,7 +29,7 @@ export default function DistributionPanel({
         kicker="06 · Distribution"
         title="Department mix"
         headingId="distribution-heading"
-        badge={<Badge tone="neutral" size="sm">{stats.sub_categories} categories</Badge>}
+        badge={<Badge tone="neutral" size="sm">{plural(stats.sub_categories, "category", "categories")}</Badge>}
       />
 
       <div className={cn(panelBody, "flex flex-1 flex-col")}>

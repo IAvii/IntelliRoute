@@ -1,6 +1,7 @@
 /** KpiStrip - the four knowledge-base metric cards above the console. */
 import { GraphKpi } from "@/components/graph-kpi";
 import type { DeptAgg, Stats } from "@/lib/types";
+import { formatCount } from "@/lib/utils";
 
 interface KpiStripProps {
   stats: Stats;
@@ -40,7 +41,7 @@ export default function KpiStrip({
       />
       <GraphKpi
         title="VOLUME"
-        value={String(stats.reviews)}
+        value={formatCount(stats.reviews)}
         label="reviews routed"
         hint={`${avgPerCategory}/cat`}
         data={deptAgg.map((d) => d.reviews)}

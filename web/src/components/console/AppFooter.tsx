@@ -29,7 +29,7 @@ export default function AppFooter() {
           href={PROFILE_URL}
           target="_blank"
           rel="noreferrer"
-          className="group inline-flex items-center gap-1.5 text-[10px] normal-case tracking-[0.02em] transition-colors duration-150 hover:text-ink"
+          className="group -my-2 inline-flex items-center gap-1.5 py-2 text-[10px] normal-case tracking-[0.02em] transition-colors duration-150 hover:text-ink"
           aria-label="Made by Avinash Ganore on GitHub"
         >
           <span className="uppercase tracking-[0.16em]">Made by</span>

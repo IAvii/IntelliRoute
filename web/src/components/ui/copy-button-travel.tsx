@@ -234,7 +234,7 @@ export function CarbonLift({
 
   return (
     <div ref={containerRef} className={`ns-cl-row ${className}`}>
-      <code ref={sourceRef as React.RefObject<HTMLElement>} className="ns-cl-source">
+      <code ref={sourceRef as React.RefObject<HTMLElement>} className="ns-cl-source" title={value}>
         {value}
       </code>
 

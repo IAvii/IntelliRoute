@@ -16,6 +16,7 @@ import {
   resetState,
 } from "@/api";
 import type { ClassifyResult, GraphData } from "@/lib/types";
+import { plural } from "@/lib/utils";
 
 const MIN_LOADING_MS = 700;
 
@@ -141,7 +142,7 @@ export function useEngine(): EngineState {
         } else if (traces.length > 1) {
           toast({
             type: "success",
-            title: `${traces.length} issues routed`,
+            title: `${plural(traces.length, "issue")} routed`,
             description: "Compound review split into atomic labels.",
           });
         } else {

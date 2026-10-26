@@ -15,7 +15,7 @@ import { Textarea } from "@/components/arc/textarea/textarea";
 import PanelHeader from "@/components/ui/panel-header";
 import { EXAMPLES } from "@/lib/console-content";
 import { formatDuration } from "@/lib/theme";
-import { cn } from "@/lib/utils";
+import { cn, plural } from "@/lib/utils";
 import { panel, panelBody } from "@/lib/ui";
 
 interface ComposerPanelProps {
@@ -51,7 +51,7 @@ export default function ComposerPanel({
         kicker="01 · Console"
         title="Route a review"
         headingId="composer-heading"
-        badge={<Badge tone="neutral" size="sm">{review.length} chars</Badge>}
+        badge={<Badge tone="neutral" size="sm">{plural(review.length, "char")}</Badge>}
       />
 
       <div className={panelBody}>
