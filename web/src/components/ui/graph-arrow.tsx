@@ -13,7 +13,7 @@ function GraphArrow({
     <div
       aria-hidden="true"
       className={cn(
-        "flex min-w-6 items-center gap-1",
+        "flex min-w-6 items-center gap-1 transition-colors duration-[var(--duration-standard)] ease-[var(--ease-standard)] motion-reduce:transition-none",
         stretch && "min-w-10 flex-1",
         accent ? "text-graph-accent" : "text-graph-frame",
         className

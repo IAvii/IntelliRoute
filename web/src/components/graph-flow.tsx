@@ -184,7 +184,10 @@ function GraphFlow({
                       <GraphArrow accent={live} stretch={node.stretch} />
                     ) : null}
                     <span
-                      className={cn("shrink-0 whitespace-nowrap", tones[tone])}
+                      className={cn(
+                        "shrink-0 whitespace-nowrap transition-colors duration-[var(--duration-standard)] ease-[var(--ease-standard)] motion-reduce:transition-none",
+                        tones[tone]
+                      )}
                     >
                       {node.label}
                     </span>
