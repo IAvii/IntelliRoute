@@ -1,7 +1,8 @@
-﻿import { RotateCcw, Terminal } from "lucide-react";
+import { RotateCcw, Terminal } from "lucide-react";
 import Badge from "@/components/arc/badge/badge";
 import Button from "@/components/arc/button/button";
 import { CopyButton } from "@/components/arc/copy-button/copy-button";
+import SmoothHeight from "@/components/ui/smooth-height";
 import { statusTone } from "@/lib/theme";
 import { kicker } from "@/lib/ui";
 
@@ -32,7 +33,11 @@ export default function BootScreen({ offline, connecting, onRetry }: BootScreenP
         </span>
       </a>
 
-      <div className="m-auto w-full max-w-[460px] pb-16">
+      <SmoothHeight
+        className="m-auto w-full max-w-[460px]"
+        contentClassName="pb-16"
+        morphKey={offline ? "offline" : "warming"}
+      >
         <Badge
           tone={statusTone(offline, connecting)}
           size="sm"
@@ -103,7 +108,7 @@ export default function BootScreen({ offline, connecting, onRetry }: BootScreenP
         <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.16em] text-faint-ink">
           API · 127.0.0.1:8000
         </p>
-      </div>
+      </SmoothHeight>
     </div>
   );
 }
