@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import {
   Graph,
@@ -11,6 +11,7 @@ import {
   numbers,
   splitDash,
 } from "@/components/ui/graph-frame"
+import { motionTokens } from "@/components/arc/lib/motion-tokens"
 import {
   DIM_OPACITY,
   fadeUp,
@@ -85,11 +86,35 @@ function GraphKpi({
         >
           <p
             className={cn(
-              "text-3xl tracking-tight tabular-nums sm:text-4xl",
+              "relative text-3xl tracking-tight tabular-nums sm:text-4xl",
               toneClass(palette, "primary")
             )}
           >
-            {value}
+            <AnimatePresence initial={false} mode="popLayout">
+              <motion.span
+                key={value}
+                className="inline-block"
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={
+                  reduce
+                    ? { opacity: 0, transition: { duration: 0 } }
+                    : {
+                        opacity: 0,
+                        transition: {
+                          duration: motionTokens.duration.fast,
+                          ease: [...motionTokens.ease.standard],
+                        },
+                      }
+                }
+                transition={{
+                  duration: motionTokens.duration.fast,
+                  ease: [...motionTokens.ease.standard],
+                }}
+              >
+                {value}
+              </motion.span>
+            </AnimatePresence>
           </p>
           <div className="flex items-baseline gap-3">
             <p className="text-graph-muted">{label}</p>
