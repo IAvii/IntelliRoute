@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { ArrowRight, Layers, MessageSquareText } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import Badge from "@/components/arc/badge/badge";
 import { CopyButton } from "@/components/arc/copy-button/copy-button";
 import {
@@ -7,6 +8,7 @@ import {
   DrawerContent,
   useDrawerItem,
 } from "@/components/arc/drawer/drawer";
+import { motionTokens } from "@/components/arc/lib/motion-tokens";
 import { CarbonLift } from "@/components/ui/copy-button-travel";
 import { deptColor } from "@/lib/theme";
 import type { GraphData, GraphEdge, GraphNode } from "@/lib/types";
@@ -230,6 +232,7 @@ export default function NodeDrawer({
 }: NodeDrawerProps) {
   const last = useDrawerItem(node);
   const current = node ?? last;
+  const reduce = useReducedMotion();
 
   const isDepartment = current?.type === "department";
   const isReview = current?.type === "review";
@@ -250,25 +253,35 @@ export default function NodeDrawer({
         className="max-w-[440px]"
       >
         {current ? (
-          isDepartment ? (
-            <DepartmentBody
-              node={current}
-              graph={graph}
-              onSelectNode={onSelectNode}
-            />
-          ) : isReview ? (
-            <ReviewBody
-              node={current}
-              graph={graph}
-              onSelectNode={onSelectNode}
-            />
-          ) : (
-            <CategoryBody
-              node={current}
-              graph={graph}
-              onSelectNode={onSelectNode}
-            />
-          )
+          <motion.div
+            key={current.id}
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: motionTokens.duration.fast,
+              ease: [...motionTokens.ease.standard],
+            }}
+          >
+            {isDepartment ? (
+              <DepartmentBody
+                node={current}
+                graph={graph}
+                onSelectNode={onSelectNode}
+              />
+            ) : isReview ? (
+              <ReviewBody
+                node={current}
+                graph={graph}
+                onSelectNode={onSelectNode}
+              />
+            ) : (
+              <CategoryBody
+                node={current}
+                graph={graph}
+                onSelectNode={onSelectNode}
+              />
+            )}
+          </motion.div>
         ) : null}
       </DrawerContent>
     </Drawer>
