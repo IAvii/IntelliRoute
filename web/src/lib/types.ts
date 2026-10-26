@@ -75,3 +75,13 @@ export interface GraphData {
   /** Review text keyed by the review node id. */
   reviews_by_node_id?: Record<string, string[]>;
 }
+
+/** One department row: the shape the KPI strip and the distribution chart read. */
+export interface DeptAgg {
+  dept: string;
+  color: string;
+  /** Number of sub-categories filed under the department. */
+  subs: number;
+  /** Sum of the sub-categories' review counts. */
+  reviews: number;
+}

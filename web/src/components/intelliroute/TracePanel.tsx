@@ -16,7 +16,7 @@ import { SoundingRail } from "@/components/ui/timeline-reasoning-rail";
 import { buildTraceSteps } from "@/lib/trace";
 import { DECISION_BADGES, deptColor } from "@/lib/theme";
 import type { DecisionBadge } from "@/lib/theme";
-import { kicker, panel, panelBody } from "@/lib/ui";
+import { panel, panelBody } from "@/lib/ui";
 import type { Trace, TraceStage } from "@/lib/types";
 
 interface TracePanelProps {
