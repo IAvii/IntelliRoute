@@ -13,6 +13,7 @@ def graph_add_sub_category(s: State, dept: str, sub_cat: str):
     if not s.review_graph.has_node(node_id):
         s.review_graph.add_node(
             node_id, node_type="sub_category", label=sub_cat, dept=dept,
+            color=config.DEPT_COLORS[dept],
         )
         s.review_graph.add_edge(dept, node_id, edge_type="has_category")
 

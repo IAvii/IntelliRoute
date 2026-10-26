@@ -53,6 +53,17 @@ DEPARTMENTS = [
     "Restaurant Experience",
 ]
 
+# Node colours baked into the review graph and served to the client. The
+# frontend has its own palette for the five known departments and only falls
+# back to these for a department it does not recognise.
+DEPT_COLORS = {
+    "Food": "#FF6B6B",
+    "Delivery": "#4ECDC4",
+    "Payment": "#45B7D1",
+    "App & Tech": "#96CEB4",
+    "Restaurant Experience": "#FFEAA7",
+}
+
 
 INITIAL_REVIEWS = [
     "The biryani was completely stale and had a horrible smell.",
