@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useEngine - all async engine state behind one small interface.
  *
  * Hides: 10 useState, 1 useRef, 5 useEffect, toast orchestration,
@@ -18,6 +18,9 @@ import {
 import type { ClassifyResult, GraphData } from "@/lib/types";
 
 const MIN_LOADING_MS = 700;
+
+/** How long the first tap of a two-tap reset stays armed. */
+export const RESET_ARM_MS = 4200;
 
 export interface EngineState {
   offline: boolean;
@@ -173,7 +176,7 @@ export function useEngine(): EngineState {
     if (!confirmReset) {
       setConfirmReset(true);
       clearTimeout(resetTimer.current);
-      resetTimer.current = setTimeout(() => setConfirmReset(false), 4200);
+      resetTimer.current = setTimeout(() => setConfirmReset(false), RESET_ARM_MS);
       return;
     }
 

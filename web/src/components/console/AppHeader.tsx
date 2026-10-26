@@ -5,8 +5,10 @@
  * After:  callers pass the six facts the header renders.
  */
 import { RotateCcw } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import Badge, { type BadgeTone } from "@/components/arc/badge/badge";
 import Button from "@/components/arc/button/button";
+import { RESET_ARM_MS } from "@/hooks/useEngine";
 
 const NAV = [
   ["Console", "#console"],
@@ -32,6 +34,8 @@ export default function AppHeader({
   offline,
   onReset,
 }: AppHeaderProps) {
+  const reduce = useReducedMotion();
+
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/85 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-[1440px] items-center gap-4 px-5 py-3 lg:px-8">
@@ -81,18 +85,29 @@ export default function AppHeader({
           >
             {status}
           </Badge>
-          <Button
-            variant={confirmReset ? "danger" : "ghost"}
-            size="sm"
-            loading={resetting}
-            disabled={offline || resetting}
-            onClick={onReset}
-            title="Wipe in-memory state and rebuild from the seed reviews"
-            className="min-w-[104px]"
-          >
-            <RotateCcw className="size-3.5" />
-            {confirmReset ? "Confirm reset" : "Reset KB"}
-          </Button>
+          <span className="relative inline-flex">
+            <Button
+              variant={confirmReset ? "danger" : "ghost"}
+              size="sm"
+              loading={resetting}
+              disabled={offline || resetting}
+              onClick={onReset}
+              title="Wipe in-memory state and rebuild from the seed reviews"
+              className="min-w-[104px]"
+            >
+              <RotateCcw className="size-3.5" />
+              {confirmReset ? "Confirm reset" : "Reset KB"}
+            </Button>
+            {confirmReset ? (
+              <motion.span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-4 bottom-1.5 h-[2px] origin-left rounded-full bg-danger/70"
+                initial={reduce ? { opacity: 1 } : { scaleX: 1 }}
+                animate={reduce ? { opacity: 0 } : { scaleX: 0 }}
+                transition={{ duration: RESET_ARM_MS / 1000, ease: "linear" }}
+              />
+            ) : null}
+          </span>
         </div>
       </div>
     </header>
