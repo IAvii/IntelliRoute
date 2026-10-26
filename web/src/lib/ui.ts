@@ -2,7 +2,7 @@ export const panel =
   "relative rounded-[22px] border border-line bg-surface shadow-[0_22px_50px_-42px_rgba(23,22,15,0.6)]";
 
 export const panelHeader =
-  "flex items-start justify-between gap-4 border-b border-line/80 px-5 py-4";
+  "flex flex-wrap items-start justify-between gap-4 border-b border-line/80 px-5 py-4";
 
 export const panelBody = "p-5";
 

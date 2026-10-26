@@ -156,7 +156,7 @@ function Console() {
         {/* ── Trace + Confidence + Decision ─────────────────────────────────── */}
         <div
           id="trace"
-          className="mt-4 grid scroll-mt-24 items-start gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]"
+          className="mt-4 grid scroll-mt-24 items-start gap-4 [&>*]:min-w-0 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]"
         >
           <TracePanel
             traces={traces}
@@ -168,7 +168,7 @@ function Console() {
             onOpenNode={setSelectedId}
           />
 
-          <div className="flex flex-col gap-4 xl:sticky xl:top-20">
+          <div className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-20">
             <ConfidenceCard
               trace={activeTrace}
               traces={traces}
@@ -188,7 +188,7 @@ function Console() {
         {/* ── Knowledge graph + Distribution ────────────────────────────────── */}
         <div
           id="knowledge"
-          className="mt-4 grid scroll-mt-24 gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]"
+          className="mt-4 grid scroll-mt-24 gap-4 [&>*]:min-w-0 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]"
         >
           <KnowledgePanel graph={engine.graph} selectedId={selectedId} />
 

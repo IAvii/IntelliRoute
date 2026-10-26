@@ -76,15 +76,30 @@ export default function AppHeader({
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          <Badge
-            tone={tone}
-            size="sm"
-            icon={
-              <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-            }
-          >
-            {status}
-          </Badge>
+          <span className="max-sm:hidden">
+            <Badge
+              tone={tone}
+              size="sm"
+              icon={
+                <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+              }
+            >
+              {status}
+            </Badge>
+          </span>
+          <span className="sm:hidden">
+            <Badge
+              tone={tone}
+              size="sm"
+              animateWidth={false}
+              icon={
+                <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+              }
+              role="img"
+              aria-label={status}
+              title={status}
+            />
+          </span>
           <span className="relative inline-flex">
             <Button
               variant={confirmReset ? "danger" : "ghost"}
@@ -93,15 +108,17 @@ export default function AppHeader({
               disabled={offline || resetting}
               onClick={onReset}
               title="Wipe in-memory state and rebuild from the seed reviews"
-              className="min-w-[104px]"
+              className="sm:min-w-[104px]"
             >
               <RotateCcw className="size-3.5" />
-              {confirmReset ? "Confirm reset" : "Reset KB"}
+              <span className="max-sm:sr-only">
+                {confirmReset ? "Confirm reset" : "Reset KB"}
+              </span>
             </Button>
             {confirmReset ? (
               <motion.span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-4 bottom-1.5 h-[2px] origin-left rounded-full bg-danger/70"
+                className="pointer-events-none absolute inset-x-1 bottom-1.5 h-[2px] origin-left rounded-full bg-danger/70 sm:inset-x-4"
                 initial={reduce ? { opacity: 1 } : { scaleX: 1 }}
                 animate={reduce ? { opacity: 0 } : { scaleX: 0 }}
                 transition={{ duration: RESET_ARM_MS / 1000, ease: "linear" }}
