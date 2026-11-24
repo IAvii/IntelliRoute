@@ -1,0 +1,24 @@
+{
+  "$schema": "https://vercel.sh",
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "500mb",
+        "maxDuration": 30
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ],
+  "env": {
+    "FASTEMBED_CACHE_PATH": "/tmp/fastembed_cache",
+    "HF_HOME": "/tmp/huggingface"
+  }
+}
