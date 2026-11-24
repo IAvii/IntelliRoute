@@ -118,12 +118,15 @@ If you use `uv`, `uv venv --python 3.11 ../venv` creates the 3.11 venv
 without needing a system Python 3.11 install.
 
 The first request triggers a one-time `bootstrap()` that builds the
-initial knowledge base from 10 seed reviews via a single Groq call. Both
-embedding models (`bge-small-en-v1.5` ~120MB, `ms-marco-MiniLM-L-6-v2`
-~70MB) are downloaded lazily on first use.
+initial knowledge base from 10 seed reviews via a single Groq call.
+Embeddings and the cross-encoder rerank run **locally** on quantized ONNX
+weights through `fastembed` (`bge-small-en-v1.5` + `ms-marco-MiniLM-L-6-v2`),
+so there is no PyTorch and no embedding API key. The first run downloads
+~150 MB of ONNX weights into the fastembed cache (see `FASTEMBED_CACHE_PATH`);
+after that startup is offline.
 
-You'll need a Groq API key for the LLM stages
-(https://console.groq.com). The `.env` file is git-ignored.
+You'll need a Groq API key for the LLM stages (https://console.groq.com).
+The `.env` file is git-ignored.
 
 ### 2. Frontend
 
@@ -173,7 +176,7 @@ Response shape:
       {"stage": "Dept FAISS", "scores": {...}, "winner": "Food", "sim": 0.766},
       {"stage": "Sub FAISS",  "candidates": [...], "winner": "Temperature Issue",
        "sim": 0.709, "decision": "MID_ZONE", "margin": 0.017},
-      {"stage": "Rerank",     "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+      {"stage": "Rerank",     "model": "Xenova/ms-marco-MiniLM-L-6-v2",
        "scores": [["Temperature Issue", 0.093], ["Taste & Quality", 0.815],
                   ["Undercooked Food", 0.092]],
        "winner": "Taste & Quality", "bi_encoder_winner": "Temperature Issue",
@@ -199,8 +202,9 @@ Everything you might want to tune lives in `core/app/config.py`.
 | `RERANK_OVERRIDE_PROB`    | `0.40`                               | Min softmax prob for the reranker to override bi-encoder        |
 | `EMA_ALPHA`               | `0.10`                               | Prototype EMA update rate (smaller = more stable prototypes)    |
 | `OUTLIER_THRESHOLD`       | `0.65`                               | Reviews below this similarity to prototype skip prototype update|
-| `EMBEDDING_MODEL`         | `BAAI/bge-small-en-v1.5`             | Bi-encoder (384-dim, ~120MB)                                    |
-| `CROSS_ENCODER_MODEL`     | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Cross-encoder reranker (~70MB, lazy-loaded)                 |
+| `FASTEMBED_CACHE_DIR`     | unset → `<temp>/fastembed_cache`      | Where the ~150 MB of ONNX weights are cached                    |
+| `EMBEDDING_MODEL`         | `BAAI/bge-small-en-v1.5`             | Bi-encoder, 384-dim, quantized ONNX via fastembed               |
+| `CROSS_ENCODER_MODEL`     | `Xenova/ms-marco-MiniLM-L-6-v2`      | Cross-encoder reranker, ONNX via fastembed (lazy-loaded)        |
 | `LLM_MODEL`               | `qwen/qwen3.8-27b` (Groq)            | Used for issue splitting + LLM fallback                         |
 
 The seed corpus in `INITIAL_REVIEWS` is what the bootstrap LLM call

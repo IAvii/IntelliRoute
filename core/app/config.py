@@ -10,6 +10,12 @@ load_dotenv(os.path.join(_BACKEND_DIR, ".env"))
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
+# Where fastembed caches the downloaded ONNX weights (~150 MB, one time).
+# fastembed itself also reads FASTEMBED_CACHE_PATH; passing it explicitly keeps
+# local dev and deployed runs pointing at the same place. Set it to a writable
+# path (e.g. /tmp/fastembed) on hosts with a read-only filesystem.
+FASTEMBED_CACHE_DIR = os.environ.get("FASTEMBED_CACHE_PATH") or None
+
 # Confidence thresholds
 HIGH_CONF = 0.85   # assign directly
 LOW_CONF = 0.70    # middle zone -> pick best of top 3
@@ -37,11 +43,11 @@ OUTLIER_THRESHOLD = 0.65
 EMA_ALPHA = 0.10
 MAX_REPRESENTATIVES = 3
 
-# Models
+# Models — quantized ONNX weights run locally through fastembed (no PyTorch).
+# Names must match fastembed's registry, which mirrors the Hub repos.
 EMBEDDING_DIM = 384
-EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
-# Cross-encoder reranker (loaded lazily). ~70MB, ~5–10ms per 3-candidate rerank.
-CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"  # 384-d bi-encoder, mean-pooled
+CROSS_ENCODER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"  # cross-encoder reranker
 LLM_MODEL = "qwen/qwen3.8-27b"
 
 # 5 fixed departments
